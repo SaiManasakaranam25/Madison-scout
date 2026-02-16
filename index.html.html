@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Madison AI Research Scout</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            padding: 40px;
+        }
+        
+        .search-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        input[type="text"], select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .examples {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .example-chip {
+            background: white;
+            border: 2px solid #667eea;
+            color: #667eea;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .example-chip:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        .status {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            display: none;
+        }
+        
+        .status.show {
+            display: block;
+        }
+        
+        .status.error {
+            background: #ffebee;
+            border-left-color: #f44336;
+        }
+        
+        .status.success {
+            background: #e8f5e9;
+            border-left-color: #4caf50;
+        }
+        
+        .results {
+            margin-top: 30px;
+            display: none;
+        }
+        
+        .results.show {
+            display: block;
+        }
+        
+        .results-header {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .insights {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 30px;
+            line-height: 1.8;
+        }
+        
+        .insights h2 {
+            color: #667eea;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        
+        .insights h3 {
+            color: #764ba2;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .download-section {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .download-btn {
+            background: #4caf50;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            display: inline-block;
+            text-decoration: none;
+            margin-top: 10px;
+        }
+        
+        .download-btn:hover {
+            background: #45a049;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .info-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .info-card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+        
+        .spinner.show {
+            display: block;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .about-section {
+            background: #f8f9fa;
+            padding: 30px;
+            margin-top: 40px;
+            border-radius: 10px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <h1>🔬 Madison AI Research Scout</h1>
+            <p>AI-Powered Research Intelligence Across Multiple Sources</p>
+        </div>
+        
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            
+            <!-- HOW IT WORKS -->
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3>📚 Multi-Source</h3>
+                    <p>Aggregates from arXiv, AWS ML Blog, and Hugging Face Blog simultaneously</p>
+                </div>
+                <div class="info-card">
+                    <h3>🤖 AI-Powered</h3>
+                    <p>Google Gemini analyzes and synthesizes insights from all sources</p>
+                </div>
+                <div class="info-card">
+                    <h3>💾 Exportable</h3>
+                    <p>Download structured CSV reports for your research</p>
+                </div>
+            </div>
+            
+            <!-- SEARCH SECTION -->
+            <div class="search-section">
+                <div class="input-group">
+                    <label for="queryInput">🎯 What would you like to research?</label>
+                    <input 
+                        type="text" 
+                        id="queryInput" 
+                        placeholder="e.g., 'AI agents for research', 'transformer architectures', 'computer vision'"
+                    >
+                </div>
+                
+                <div class="input-group">
+                    <label for="maxResults">📊 Results per Source: <span id="resultCount">20</span></label>
+                    <input 
+                        type="range" 
+                        id="maxResults" 
+                        min="10" 
+                        max="50" 
+                        value="20" 
+                        step="5"
+                        style="width: 100%"
+                    >
+                </div>
+                
+                <button class="btn" id="searchBtn" onclick="generateInsights()">
+                    🚀 Generate Research Insights
+                </button>
+                
+                <div class="examples">
+                    <strong>💡 Examples:</strong>
+                    <span class="example-chip" onclick="setQuery('AI agents for research')">AI agents for research</span>
+                    <span class="example-chip" onclick="setQuery('Large language models')">Large language models</span>
+                    <span class="example-chip" onclick="setQuery('Computer vision')">Computer vision</span>
+                    <span class="example-chip" onclick="setQuery('Reinforcement learning')">Reinforcement learning</span>
+                </div>
+            </div>
+            
+            <!-- SPINNER -->
+            <div class="spinner" id="spinner"></div>
+            
+            <!-- STATUS -->
+            <div class="status" id="status"></div>
+            
+            <!-- RESULTS -->
+            <div class="results" id="results">
+                <div class="results-header">
+                    <h2>📄 AI-Generated Insights</h2>
+                    <p id="queryDisplay"></p>
+                </div>
+                <div class="insights" id="insights"></div>
+                
+                <div class="download-section" id="downloadSection" style="display: none;">
+                    <h3>💾 Download Your Report</h3>
+                    <p>Export the complete analysis as CSV for further use</p>
+                    <button class="download-btn" id="downloadBtn">⬇️ Download CSV Report</button>
+                </div>
+            </div>
+            
+            <!-- ABOUT SECTION -->
+            <div class="about-section">
+                <h2>ℹ️ About This Tool</h2>
+                
+                <h3>🛠️ Tech Stack</h3>
+                <ul>
+                    <li><strong>Workflow Engine:</strong> n8n</li>
+                    <li><strong>AI Model:</strong> Google Gemini 2.5 Flash</li>
+                    <li><strong>Data Sources:</strong> arXiv API, AWS ML Blog RSS, Hugging Face Blog RSS</li>
+                    <li><strong>Interface:</strong> HTML/CSS/JavaScript</li>
+                </ul>
+                
+                <h3>⚙️ How It Works</h3>
+                <ol>
+                    <li><strong>Parallel Data Collection:</strong> Fetches from 3 authoritative sources simultaneously</li>
+                    <li><strong>Normalization:</strong> Converts different formats into unified schema</li>
+                    <li><strong>AI Analysis:</strong> Google Gemini identifies trends and extracts insights</li>
+                    <li><strong>Structured Export:</strong> Returns readable insights + downloadable CSV</li>
+                </ol>
+                
+                <h3>👤 Created By</h3>
+                <p><strong>Karanam Sai Manasa</strong><br>
+                Northeastern University | INFO6255 - Branding & AI | Spring 2026</p>
+            </div>
+        </div>
+        
+        <!-- FOOTER -->
+        <footer>
+            🔬 Madison AI Research Scout | Powered by n8n + Google Gemini | © 2026
+        </footer>
+    </div>
+    
+    <script>
+        // ============================================
+        // CONFIGURATION
+        // ============================================
+        // TODO: REPLACE WITH YOUR ACTUAL WEBHOOK URL
+        const N8N_WEBHOOK_URL =  'https://unparticularized-lauretta-consolitorily.ngrok-free.dev/webhook/research-scout';
+        
+        // Update result count display
+        document.getElementById('maxResults').addEventListener('input', (e) => {
+            document.getElementById('resultCount').textContent = e.target.value;
+        });
+        
+        // ============================================
+        // SET EXAMPLE QUERY
+        // ============================================
+        function setQuery(query) {
+            document.getElementById('queryInput').value = query;
+        }
+        
+        // ============================================
+        // MAIN FUNCTION: GENERATE INSIGHTS
+        // ============================================
+        async function generateInsights() {
+            const query = document.getElementById('queryInput').value.trim();
+            const maxResults = document.getElementById('maxResults').value;
+            
+            // Validation
+            if (!query) {
+                showStatus('⚠️ Please enter a research topic to explore.', 'error');
+                return;
+            }
+            
+            // Reset UI
+            document.getElementById('results').classList.remove('show');
+            document.getElementById('insights').innerHTML = '';
+            document.getElementById('downloadSection').style.display = 'none';
+            
+            // Show loading state
+            const searchBtn = document.getElementById('searchBtn');
+            searchBtn.disabled = true;
+            searchBtn.textContent = '🔄 Researching...';
+            
+            document.getElementById('spinner').classList.add('show');
+            showStatus(`🔍 Researching "${query}" across arXiv, AWS ML Blog, and Hugging Face...\n📡 Connecting to workflow...`, 'info');
+            
+            try {
+                // Call n8n webhook
+                const response = await fetch(N8N_WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        query: query,
+                        max_results: parseInt(maxResults)
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log('Response from n8n:', data);
+                
+                // Extract insights (adjust based on YOUR n8n output structure)
+                let insights = '';
+                let csvData = null;
+                
+                if (Array.isArray(data) && data.length > 0) {
+                    insights = data[0].insights || data[0].output || data[0].text || JSON.stringify(data[0], null, 2);
+                    csvData = data;
+                } else if (data.insights) {
+                    insights = data.insights;
+                } else if (data.output) {
+                    insights = data.output;
+                } else {
+                    insights = JSON.stringify(data, null, 2);
+                }
+                
+                // Display results
+                displayResults(query, insights, csvData);
+                showStatus('✅ Analysis complete!', 'success');
+                
+            } catch (error) {
+                console.error('Error:', error);
+                
+                let errorMsg = '❌ <strong>Error connecting to workflow</strong><br><br>';
+                
+                if (error.message.includes('Failed to fetch')) {
+                    errorMsg += `
+                        <strong>Connection Failed</strong><br>
+                        Possible causes:<br>
+                        • n8n workflow is not running<br>
+                        • Workflow is not activated<br>
+                        • CORS policy blocking request<br>
+                        • Webhook URL is incorrect<br><br>
+                        <strong>Quick fixes:</strong><br>
+                        1. Check n8n is running at http://localhost:5678<br>
+                        2. Activate your workflow in n8n<br>
+                        3. Enable CORS in n8n webhook settings
+                    `;
+                } else {
+                    errorMsg += `Error: ${error.message}`;
+                }
+                
+                showStatus(errorMsg, 'error');
+            } finally {
+                // Reset button
+                searchBtn.disabled = false;
+                searchBtn.textContent = '🚀 Generate Research Insights';
+                document.getElementById('spinner').classList.remove('show');
+            }
+        }
+        
+        // ============================================
+        // DISPLAY RESULTS
+        // ============================================
+        function displayResults(query, insights, csvData) {
+            // Show results section
+            document.getElementById('results').classList.add('show');
+            
+            // Set query display
+            document.getElementById('queryDisplay').textContent = `Research topic: "${query}"`;
+            
+            // Format and display insights
+            const insightsHtml = formatInsights(insights);
+            document.getElementById('insights').innerHTML = insightsHtml;
+            
+            // Set up CSV download if data available
+            if (csvData) {
+                document.getElementById('downloadSection').style.display = 'block';
+                setupCSVDownload(csvData, query);
+            }
+            
+            // Scroll to results
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // ============================================
+        // FORMAT INSIGHTS
+        // ============================================
+        function formatInsights(insights) {
+            // Convert markdown-like text to HTML
+            let html = insights;
+            
+            // Convert line breaks
+            html = html.replace(/\n/g, '<br>');
+            
+            // Convert headers (## Header -> <h2>)
+            html = html.replace(/###\s(.+?)<br>/g, '<h3>$1</h3>');
+            html = html.replace(/##\s(.+?)<br>/g, '<h2>$1</h2>');
+            
+            // Convert bold (**text** -> <strong>)
+            html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            
+            // Convert bullet points (- item -> <li>)
+            html = html.replace(/^-\s(.+?)$/gm, '<li>$1</li>');
+            
+            // Add metadata
+            html += `<br><br><hr style="margin: 30px 0; border: none; border-top: 2px solid #e0e0e0;">
+                     <p style="color: #666; font-size: 0.9em;">
+                     <strong>Generated:</strong> ${new Date().toLocaleString()}<br>
+                     <strong>Sources:</strong> arXiv, AWS ML Blog, Hugging Face Blog<br>
+                     <strong>AI Model:</strong> Google Gemini 2.5 Flash
+                     </p>`;
+            
+            return html;
+        }
+        
+        // ============================================
+        // CSV DOWNLOAD
+        // ============================================
+        function setupCSVDownload(data, query) {
+            document.getElementById('downloadBtn').onclick = () => {
+                // Convert JSON to CSV
+                const csv = convertToCSV(data);
+                
+                // Create download
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `research_${query.replace(/\s+/g, '_')}_${Date.now()}.csv`;
+                a.click();
+                window.URL.revokeObjectURL(url);
+            };
+        }
+        
+        function convertToCSV(data) {
+            if (!Array.isArray(data) || data.length === 0) {
+                return 'No data available';
+            }
+            
+            // Get headers from first object
+            const headers = Object.keys(data[0]);
+            
+            // Create CSV content
+            let csv = headers.join(',') + '\n';
+            
+            data.forEach(row => {
+                const values = headers.map(header => {
+                    const value = row[header] || '';
+                    // Escape commas and quotes
+                    return `"${String(value).replace(/"/g, '""')}"`;
+                });
+                csv += values.join(',') + '\n';
+            });
+            
+            return csv;
+        }
+        
+        // ============================================
+        // STATUS MESSAGES
+        // ============================================
+        function showStatus(message, type = 'info') {
+            const statusEl = document.getElementById('status');
+            statusEl.innerHTML = message;
+            statusEl.className = 'status show ' + type;
+        }
+        
+        // ============================================
+        // KEYBOARD SHORTCUTS
+        // ============================================
+        document.getElementById('queryInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                generateInsights();
+            }
+        });
+    </script>
+</body>
+</html>
